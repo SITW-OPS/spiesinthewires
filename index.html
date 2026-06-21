@@ -50,14 +50,16 @@ body {
 <script>
 const messages = [
     "Transmission in progress.",
-    "传输进行中。",
-    "Передача выполняется.",
-    "전송 진행 중.",
-    "Overføring pågår.",
-    "送信中。",
-    "Transmission en cours.",
-    "Transmisión en curso.",
-    "Transmisja w toku."
+    "传输进行中。",            // Chinese
+    "Передача выполняется.", // Russian
+    "전송 진행 중.",         // Korean
+    "Overføring pågår.",    // Norwegian
+    "送信中。",             // Japanese
+    "Transmission en cours.", // French
+    "Transmisión en curso.",  // Spanish
+    "Transmisja w toku.",     // Polish
+    "Sending í gangi.",       // Icelandic
+    "प्रसारण जारी है।"        // Hindi
 ];
 let index = 0;
 const element = document.getElementById("transmission");
@@ -70,7 +72,7 @@ function cycleText() {
         element.classList.add("visible");
     }, 2000);
 }
-setInterval(cycleText, 10000);
+setInterval(cycleText, 8000);
 </script>
 </body>
 </html>
