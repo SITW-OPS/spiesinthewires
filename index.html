@@ -62,7 +62,7 @@ const messages = [
     "प्रसारण जारी है।",        // Hindi
     "Transmissão em andamento." // Portuguese
 ];
-let index = 0;
+let index = -1;
 const element = document.getElementById("transmission");
 element.classList.add("visible");
 function cycleText() {
@@ -73,6 +73,7 @@ function cycleText() {
         element.classList.add("visible");
     }, 2000);
 }
+cycleText();
 setInterval(cycleText, 6000);
 </script>
 </body>
