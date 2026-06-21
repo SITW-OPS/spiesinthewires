@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>spies in the wires</title>
+
+<style>
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    background: #050505;
+    color: #ffffff;
+    font-family: "Courier New", monospace;
+    text-align: center;
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+
+    padding-top: 22vh;
+}
+
+.main {
+    line-height: 2;
+    font-size: 2rem;
+}
+
+.transmission {
+    animation: pulse 24s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%   { opacity: 1; }
+    50%  { opacity: 0.3; }
+    100% { opacity: 1; }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="main">
+    spies in the wires
+
+    <br><br>
+
+    signal detected.
+
+    <br><br>
+
+    <span class="transmission">
+        transmission in progress.
+    </span>
+</div>
+
+</body>
+</html>
