@@ -50,13 +50,13 @@ const TRANSMISSION_MESSAGES = [
 ];
 
 const TRANSMISSION_TRACKS = [
-  { src: 'audio/SITW_TX001.mp3', volume: 0.30 },
-  { src: 'audio/SITW_TX002.mp3', volume: 0.03 },
-  { src: 'audio/SITW_TX003.mp3', volume: 0.23 }
+  { src: 'audio/SITW_TX001.mp3', volume: 0.40 },
+  { src: 'audio/SITW_TX002.mp3', volume: 0.13 },
+  { src: 'audio/SITW_TX003.mp3', volume: 0.33 }
 ];
 
 const AUDIO = {
-  ambienceVolume: 0.10,
+  ambienceVolume: 0.30,
   ambienceFadeDuration: 18000,
   transmissionFadeInDuration: 1800,
   transmissionFadeOutDuration: 2200
