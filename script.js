@@ -56,7 +56,7 @@ const TRANSMISSION_TRACKS = [
 ];
 
 const AUDIO = {
-  ambienceVolume: 0.06,
+  ambienceVolume: 0.10,
   ambienceFadeDuration: 18000,
   transmissionFadeInDuration: 1800,
   transmissionFadeOutDuration: 2200
