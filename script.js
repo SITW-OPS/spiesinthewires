@@ -63,6 +63,14 @@ const AUDIO = {
   transmissionFadeOutDuration: 2200
 };
 
+/*
+ * Each transmission plays for this proportion
+ * of its actual audio-file duration.
+ *
+ * 0.5 = 50%
+ */
+const TRANSMISSION_PLAYBACK_RATIO = 0.5;
+
 let lastMessageIndex = -1;
 let currentTrackIndex = 0;
 let fadeOutStarted = false;
@@ -197,15 +205,27 @@ async function playCurrentTransmission() {
   }
 }
 
-/** Fade a transmission out shortly before its natural end. */
+/**
+ * Fade the current transmission out shortly before
+ * its 50% playback point.
+ */
 function handleTransmissionProgress() {
   if (
     fadeOutStarted ||
     !Number.isFinite(player.duration) ||
-    player.duration -
-      player.currentTime >
-      AUDIO.transmissionFadeOutDuration / 1000
+    player.duration <= 0
   ) {
+    return;
+  }
+
+  const targetEndTime =
+    player.duration * TRANSMISSION_PLAYBACK_RATIO;
+
+  const fadeStartTime =
+    targetEndTime -
+    AUDIO.transmissionFadeOutDuration / 1000;
+
+  if (player.currentTime < fadeStartTime) {
     return;
   }
 
@@ -216,9 +236,14 @@ function handleTransmissionProgress() {
     0,
     AUDIO.transmissionFadeOutDuration
   );
+
+  window.setTimeout(() => {
+    player.pause();
+    handleTransmissionEnd();
+  }, AUDIO.transmissionFadeOutDuration);
 }
 
-/** Advance to the next transmission after the current one completes. */
+/** Advance to the next transmission. */
 async function handleTransmissionEnd() {
   currentTrackIndex =
     (currentTrackIndex + 1) %
