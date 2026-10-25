@@ -61,6 +61,10 @@ body {
   pointer-events: auto;
 }
 
+.release-entry + .release-entry {
+  margin-top: 1.6rem;
+}
+
 .release-code {
   margin-bottom: 0.7rem;
   color: #555;
