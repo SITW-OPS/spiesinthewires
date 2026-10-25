@@ -19,35 +19,16 @@ const INTRO_MESSAGES = [
 ];
 
 const TRANSMISSION_MESSAGES = [
-  'Transmission in progress.',
-  '送信中。',
-  'Передача продолжается.',
-  'Übertragung läuft.',
-  '传输进行中。',
-  'Lähetys käynnissä.',
-  'Transmisión en curso.',
-  '송신 진행 중.',
-  'Sending í gangi.',
-  'Transmission en cours.',
-  'Трансляція триває.',
-  'Transmisjon pågår.',
-  'Overdracht bezig.',
-  'Adás folyamatban.',
-  'Trasmissione in corso.',
-  'Transmissão em andamento.',
-  'שידור מתבצע.',
-  'Μετάδοση σε εξέλιξη.',
-  'İletim sürüyor.',
-  'Transmisja w toku.',
-  'Přenos probíhá.',
-  'Prenos poteka.',
-  'Prijenos u tijeku.',
-  'ส่งสัญญาณอยู่',
-  'प्रसारण जारी है।',
-  '傳輸進行中。',
-  'Sändning pågår.',
-  'Transmission i gang.',
-  'Prenos prebieha.'
+  'Transmission in progress.', '送信中。', 'Передача продолжается.',
+  'Übertragung läuft.', '传输进行中。', 'Lähetys käynnissä.',
+  'Transmisión en curso.', '송신 진행 중.', 'Sending í gangi.',
+  'Transmission en cours.', 'Трансляція триває.', 'Transmisjon pågår.',
+  'Overdracht bezig.', 'Adás folyamatban.', 'Trasmissione in corso.',
+  'Transmissão em andamento.', 'שידור מתבצע.', 'Μετάδοση σε εξέλιξη.',
+  'İletim sürüyor.', 'Transmisja w toku.', 'Přenos probíhá.',
+  'Prenos poteka.', 'Prijenos u tijeku.', 'ส่งสัญญาณอยู่',
+  'प्रसारण जारी है।', '傳輸進行中。', 'Sändning pågår.',
+  'Transmission i gang.', 'Prenos prebieha.'
 ];
 
 const TRANSMISSION_TRACKS = [
@@ -63,12 +44,6 @@ const AUDIO = {
   transmissionFadeOutDuration: 2200
 };
 
-/*
- * Each transmission plays for this proportion
- * of its actual audio-file duration.
- *
- * 0.5 = 50%
- */
 const TRANSMISSION_PLAYBACK_RATIO = 0.5;
 
 let lastMessageIndex = -1;
@@ -76,31 +51,22 @@ let currentTrackIndex = 0;
 let fadeOutStarted = false;
 let receptionStarted = false;
 
-/** Wait for a specified duration. */
 function wait(duration) {
   return new Promise((resolve) => {
     window.setTimeout(resolve, duration);
   });
 }
 
-/** Animate an audio element's volume smoothly. */
 function fadeAudio(audio, targetVolume, duration) {
   const startVolume = audio.volume;
   const startTime = performance.now();
 
   return new Promise((resolve) => {
     function step(now) {
-      const progress = Math.min(
-        (now - startTime) / duration,
-        1
-      );
+      const progress = Math.min((now - startTime) / duration, 1);
+      const easedProgress = progress * progress * (3 - 2 * progress);
 
-      const easedProgress =
-        progress * progress * (3 - 2 * progress);
-
-      audio.volume =
-        startVolume +
-        (targetVolume - startVolume) * easedProgress;
+      audio.volume = startVolume + (targetVolume - startVolume) * easedProgress;
 
       if (progress < 1) {
         requestAnimationFrame(step);
@@ -113,7 +79,6 @@ function fadeAudio(audio, targetVolume, duration) {
   });
 }
 
-/** Replace the status text while preserving its CSS transition hook. */
 function showStatus(message) {
   status.classList.remove('visible');
 
@@ -126,25 +91,19 @@ function showStatus(message) {
   }, 400);
 }
 
-/** Choose a language without repeating the immediately previous one. */
 function showRandomTransmissionMessage() {
   let nextIndex;
 
   do {
-    nextIndex = Math.floor(
-      Math.random() * TRANSMISSION_MESSAGES.length
-    );
+    nextIndex = Math.floor(Math.random() * TRANSMISSION_MESSAGES.length);
   } while (nextIndex === lastMessageIndex);
 
   lastMessageIndex = nextIndex;
   showStatus(TRANSMISSION_MESSAGES[nextIndex]);
 }
 
-/** Continue cycling through transmissions at varied intervals. */
 function scheduleTransmissionMessages() {
-  const nextDelay =
-    STATUS_INTERVAL_MIN +
-    Math.random() * STATUS_INTERVAL_VARIANCE;
+  const nextDelay = STATUS_INTERVAL_MIN + Math.random() * STATUS_INTERVAL_VARIANCE;
 
   window.setTimeout(() => {
     showRandomTransmissionMessage();
@@ -152,90 +111,52 @@ function scheduleTransmissionMessages() {
   }, nextDelay);
 }
 
-/** Start the machine-room ambience and bring it in gently. */
 async function startAmbience() {
   machine.volume = 0;
   machine.currentTime = 0;
 
   try {
     await machine.play();
-
-    await fadeAudio(
-      machine,
-      AUDIO.ambienceVolume,
-      AUDIO.ambienceFadeDuration
-    );
+    await fadeAudio(machine, AUDIO.ambienceVolume, AUDIO.ambienceFadeDuration);
   } catch (error) {
-    console.warn(
-      'Machine Room ambience could not start:',
-      error
-    );
+    console.warn('Machine Room ambience could not start:', error);
   }
 }
 
-/** Load and play the current transmission track with a fade-in. */
 async function playCurrentTransmission() {
   const track = TRANSMISSION_TRACKS[currentTrackIndex];
 
   fadeOutStarted = false;
-
   player.pause();
   player.removeAttribute('src');
   player.load();
-
   player.src = track.src;
   player.load();
-
   player.currentTime = 0;
   player.volume = 0;
 
   try {
     await player.play();
-
-    await fadeAudio(
-      player,
-      track.volume,
-      AUDIO.transmissionFadeInDuration
-    );
+    await fadeAudio(player, track.volume, AUDIO.transmissionFadeInDuration);
   } catch (error) {
-    console.warn(
-      'Transmission could not start:',
-      error
-    );
+    console.warn('Transmission could not start:', error);
   }
 }
 
-/**
- * Fade the current transmission out shortly before
- * its 50% playback point.
- */
 function handleTransmissionProgress() {
-  if (
-    fadeOutStarted ||
-    !Number.isFinite(player.duration) ||
-    player.duration <= 0
-  ) {
+  if (fadeOutStarted || !Number.isFinite(player.duration) || player.duration <= 0) {
     return;
   }
 
-  const targetEndTime =
-    player.duration * TRANSMISSION_PLAYBACK_RATIO;
-
-  const fadeStartTime =
-    targetEndTime -
-    AUDIO.transmissionFadeOutDuration / 1000;
+  const targetEndTime = player.duration * TRANSMISSION_PLAYBACK_RATIO;
+  const fadeStartTime = targetEndTime - AUDIO.transmissionFadeOutDuration / 1000;
 
   if (player.currentTime < fadeStartTime) {
     return;
   }
 
   fadeOutStarted = true;
-
-  fadeAudio(
-    player,
-    0,
-    AUDIO.transmissionFadeOutDuration
-  );
+  fadeAudio(player, 0, AUDIO.transmissionFadeOutDuration);
 
   window.setTimeout(() => {
     player.pause();
@@ -243,27 +164,17 @@ function handleTransmissionProgress() {
   }, AUDIO.transmissionFadeOutDuration);
 }
 
-/** Advance to the next transmission. */
 async function handleTransmissionEnd() {
-  currentTrackIndex =
-    (currentTrackIndex + 1) %
-    TRANSMISSION_TRACKS.length;
-
+  currentTrackIndex = (currentTrackIndex + 1) % TRANSMISSION_TRACKS.length;
   showRandomTransmissionMessage();
-
   await wait(350);
-
   playCurrentTransmission();
 }
 
-/** Reveal the interface and begin the reception sequence. */
 async function beginReception() {
   await wait(STARTUP_DELAY);
-
   title.classList.add('visible');
-
   startAmbience();
-
   await wait(3200);
 
   for (const message of INTRO_MESSAGES) {
@@ -272,13 +183,9 @@ async function beginReception() {
   }
 
   showRandomTransmissionMessage();
-
   scheduleTransmissionMessages();
-
   await wait(900);
-
   playCurrentTransmission();
-
   await wait(4200);
 
   if (release) {
@@ -287,30 +194,19 @@ async function beginReception() {
   }
 }
 
-player.addEventListener(
-  'timeupdate',
-  handleTransmissionProgress
-);
+player.addEventListener('timeupdate', handleTransmissionProgress);
+player.addEventListener('ended', handleTransmissionEnd);
 
-player.addEventListener(
-  'ended',
-  handleTransmissionEnd
-);
+document.body.addEventListener('click', () => {
+  if (receptionStarted) {
+    return;
+  }
 
-document.body.addEventListener(
-  'click',
-  () => {
-    if (receptionStarted) {
-      return;
-    }
+  receptionStarted = true;
 
-    receptionStarted = true;
+  if (hint) {
+    hint.style.display = 'none';
+  }
 
-    if (hint) {
-      hint.style.display = 'none';
-    }
-
-    beginReception();
-  },
-  { once: true }
-);
+  beginReception();
+}, { once: true });
